@@ -2,7 +2,8 @@ import streamlit as st
 import os
 import glob
 import time
-from downloader import download_media
+import tempfile
+from downloader import download_media, DownloadBlockedError
 
 # Page configuration with premium design
 st.set_page_config(
@@ -55,6 +56,24 @@ for f in glob.glob(os.path.join(STATIC_DIR, "*")):
 url = st.text_input("YouTube Video URL", placeholder="https://www.youtube.com/watch?v=...")
 mode = st.selectbox("Download Mode", ["Video (MP4 - Best Quality)", "Audio (MP3)"])
 
+with st.expander("Advanced: fix 403 / blocked errors"):
+    st.caption(
+        "YouTube has been aggressively blocking automated downloaders in 2025-2026. "
+        "Uploading cookies.txt from a logged-in browser session sometimes helps, but "
+        "is not guaranteed to fix it - see the README/chat notes for details."
+    )
+    cookies_upload = st.file_uploader(
+        "Optional: cookies.txt (exported from a logged-in YouTube session)",
+        type=["txt"],
+    )
+
+cookiefile_path = None
+if cookies_upload is not None:
+    tmp_cookie_file = tempfile.NamedTemporaryFile(delete=False, suffix=".txt")
+    tmp_cookie_file.write(cookies_upload.getvalue())
+    tmp_cookie_file.close()
+    cookiefile_path = tmp_cookie_file.name
+
 if st.button("Generate Download Link"):
     if not url.strip():
         st.error("Please enter a valid YouTube URL.")
@@ -62,8 +81,8 @@ if st.button("Generate Download Link"):
         try:
             with st.spinner("Downloading and processing from YouTube... This may take a minute."):
                 # Download directly to static directory
-                filepath = download_media(url.strip(), mode, STATIC_DIR)
-                
+                filepath = download_media(url.strip(), mode, STATIC_DIR, cookiefile=cookiefile_path)
+
                 if os.path.exists(filepath):
                     filename = os.path.basename(filepath)
                     
@@ -83,5 +102,13 @@ if st.button("Generate Download Link"):
                     )
                 else:
                     st.error("Error: Output file was not found.")
+        except DownloadBlockedError as e:
+            st.error(
+                "⚠️ YouTube blocked this download attempt (all client strategies failed). "
+                "This is very likely YouTube's own anti-bot / PO-token enforcement, or this "
+                "server's IP being rate-limited - not a bug in your input. Try again in a "
+                "few minutes, try a different video, or upload cookies.txt above."
+            )
+            st.caption(str(e))
         except Exception as e:
             st.error(f"An error occurred: {e}")
