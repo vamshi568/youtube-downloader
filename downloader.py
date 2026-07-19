@@ -56,6 +56,7 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
                     'player_client': ['web', 'android', 'web_embedded']
                 }
             },
+            'verbose': True,
         }
     else: # Video (MP4 - Best Quality)
         ydl_opts = {
@@ -74,6 +75,7 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
                     'player_client': ['web', 'android', 'web_embedded']
                 }
             },
+            'verbose': True,
         }
         
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
