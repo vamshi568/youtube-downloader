@@ -1,3 +1,4 @@
 streamlit>=1.30.0
 yt-dlp @ git+https://github.com/yt-dlp/yt-dlp.git@master
 yt-dlp-ejs
+bgutil-ytdlp-pot-provider

@@ -3,6 +3,8 @@ import os
 import shutil
 import subprocess
 
+from pot_server import ensure_pot_server_running
+
 # Dynamically locate node or nodejs executable
 NODE_PATH = shutil.which("node") or shutil.which("nodejs")
 if not NODE_PATH:
@@ -24,18 +26,25 @@ else:
 
 # YouTube has been rolling out "SABR-only" streaming + Proof-of-Origin (PO) token
 # enforcement through 2025-2026 (see https://github.com/yt-dlp/yt-dlp/issues/12482).
-# The 'android'/'android_sdkless' clients are the ones being hit hardest and are
-# being phased out community-wide, so we no longer request them. 'tv' and 'mweb'
-# currently have the best odds of returning a playable, non-SABR-only format
-# without needing a manually-supplied PO token, with 'web' as a last resort.
+# 'mweb' and 'web' are the clients community reports say benefit most from having
+# a real PO token (see the bgutil PO-token server started below); 'tv' comes next
+# since it can hit DRM experiments on some videos (issue #12563); 'android'/
+# 'android_sdkless' are being phased out community-wide and are skipped entirely.
 # This list will likely need to change again as YouTube keeps adjusting things -
 # check https://github.com/yt-dlp/yt-dlp/issues/12482 for the current guidance.
 CLIENT_STRATEGIES = [
-    ["tv"],
     ["mweb"],
     ["web"],
+    ["tv"],
     ["tv", "web"],
 ]
+
+# Best-effort: start a local PO-token generator so yt-dlp's bgutil plugin
+# (pip package `bgutil-ytdlp-pot-provider`, see requirements.txt) can attach a
+# real token to requests instead of getting SABR-only/no-URL responses. This
+# never raises - POT_SERVER_AVAILABLE is just informational/logged.
+POT_SERVER_AVAILABLE = ensure_pot_server_running()
+print(f"DEBUG: PO-token server available: {POT_SERVER_AVAILABLE}")
 
 
 class DownloadBlockedError(Exception):
@@ -113,10 +122,11 @@ def download_media(url: str, mode: str, out_dir: str, cookiefile: str | None = N
     # rate-limited), not a bug in this app. See:
     # https://github.com/yt-dlp/yt-dlp/issues/12482
     raise DownloadBlockedError(
-        "YouTube rejected every download strategy we tried (tv/mweb/web clients). "
-        "This is almost certainly YouTube's current anti-bot / PO-token enforcement "
-        "blocking this server, not a problem with your input. It's a known, actively "
-        "unresolved issue for yt-dlp in general right now - see "
-        "https://github.com/yt-dlp/yt-dlp/issues/12482. "
+        "YouTube rejected every download strategy we tried (mweb/web/tv clients). "
+        f"Local PO-token server was {'available' if POT_SERVER_AVAILABLE else 'NOT available'} "
+        "for this attempt. This is almost certainly YouTube's current anti-bot / PO-token "
+        "enforcement blocking this server (or this specific video being extra-restricted), "
+        "not a problem with your input. It's a known, actively unresolved issue for yt-dlp "
+        "in general right now - see https://github.com/yt-dlp/yt-dlp/issues/12482. "
         f"Last underlying error: {last_error}"
     )
