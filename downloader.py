@@ -11,6 +11,18 @@ if not NODE_PATH:
             NODE_PATH = path
             break
 
+print(f"DEBUG: NODE_PATH detected as: {NODE_PATH}")
+if NODE_PATH:
+    try:
+        import subprocess
+        node_version = subprocess.check_output([NODE_PATH, "--version"], text=True).strip()
+        print(f"DEBUG: Node.js version: {node_version}")
+    except Exception as e:
+        print(f"DEBUG: Failed to run Node.js from {NODE_PATH}: {e}")
+else:
+    print("DEBUG: No Node.js executable found on the system.")
+
+
 def download_media(url: str, mode: str, out_dir: str) -> str:
     os.makedirs(out_dir, exist_ok=True)
     
