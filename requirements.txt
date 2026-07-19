@@ -1,2 +1,2 @@
 streamlit>=1.30.0
-yt-dlp @ https://github.com/yt-dlp/yt-dlp-nightly-builds/releases/latest/download/yt_dlp_nightly-py3-none-any.whl
+yt-dlp @ git+https://github.com/yt-dlp/yt-dlp.git@master
