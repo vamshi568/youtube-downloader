@@ -18,7 +18,9 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             # Allow fetching external JS challenge solvers:
             'remote_components': ['ejs:github'],
             # Enable Node.js JS runtime:
-            'js_runtimes': ['node', 'node:/usr/bin/node', 'node:/usr/bin/nodejs'],
+            'js_runtimes': {
+                'node': {}
+            },
             # Bypass datacenter 403 blocks and use web/android clients:
             'extractor_args': {
                 'youtube': {
@@ -36,7 +38,9 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             # Allow fetching external JS challenge solvers:
             'remote_components': ['ejs:github'],
             # Enable Node.js JS runtime:
-            'js_runtimes': ['node', 'node:/usr/bin/node', 'node:/usr/bin/nodejs'],
+            'js_runtimes': {
+                'node': {}
+            },
             # Bypass datacenter 403 blocks and use web/android clients:
             'extractor_args': {
                 'youtube': {
