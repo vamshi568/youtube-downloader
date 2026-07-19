@@ -15,10 +15,10 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             }],
             # Bypass SSL errors:
             'nocheckcertificate': True,
-            # Bypass datacenter 403 blocks and exclude TV client to avoid DRM error:
+            # Bypass datacenter 403 blocks and use web/android clients:
             'extractor_args': {
                 'youtube': {
-                    'player_client': ['default', '-tv', 'web_embedded']
+                    'player_client': ['web', 'android', 'web_embedded']
                 }
             },
         }
@@ -29,10 +29,10 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             'merge_output_format': 'mp4',
             # Bypass SSL errors:
             'nocheckcertificate': True,
-            # Bypass datacenter 403 blocks and exclude TV client to avoid DRM error:
+            # Bypass datacenter 403 blocks and use web/android clients:
             'extractor_args': {
                 'youtube': {
-                    'player_client': ['default', '-tv', 'web_embedded']
+                    'player_client': ['web', 'android', 'web_embedded']
                 }
             },
         }
