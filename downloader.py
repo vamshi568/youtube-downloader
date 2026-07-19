@@ -15,6 +15,8 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             }],
             # Bypass SSL errors:
             'nocheckcertificate': True,
+            # Allow fetching external JS challenge solvers:
+            'remote_components': ['ejs:github'],
             # Bypass datacenter 403 blocks and use web/android clients:
             'extractor_args': {
                 'youtube': {
@@ -29,6 +31,8 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             'merge_output_format': 'mp4',
             # Bypass SSL errors:
             'nocheckcertificate': True,
+            # Allow fetching external JS challenge solvers:
+            'remote_components': ['ejs:github'],
             # Bypass datacenter 403 blocks and use web/android clients:
             'extractor_args': {
                 'youtube': {
