@@ -15,6 +15,12 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             }],
             # Bypass SSL errors:
             'nocheckcertificate': True,
+            # Bypass datacenter 403 blocks:
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['web_embedded', 'web', 'tv']
+                }
+            },
         }
     else: # Video (MP4 - Best Quality)
         ydl_opts = {
@@ -23,6 +29,12 @@ def download_media(url: str, mode: str, out_dir: str) -> str:
             'merge_output_format': 'mp4',
             # Bypass SSL errors:
             'nocheckcertificate': True,
+            # Bypass datacenter 403 blocks:
+            'extractor_args': {
+                'youtube': {
+                    'player_client': ['web_embedded', 'web', 'tv']
+                }
+            },
         }
         
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
